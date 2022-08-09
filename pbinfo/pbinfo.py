@@ -96,7 +96,7 @@ async def get_account(name: str):
       data['goal'] = 'https://www.pbinfo.ro' + soup.find('div', class_='panel-heading center').find('img')['src']
       data['success'] = soup.find('span', string='succes (%)').find_previous('span').get_text()
       
-      async with session.get(URL_PB) as req:
+      async with session.get(URL_PB, params={'user': name}) as req:
         pbjson = await req.json(content_type='text/html')
         data['problems'] = pbjson['content']
         for k, v in data.items():
