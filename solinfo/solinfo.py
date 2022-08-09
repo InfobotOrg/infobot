@@ -6,7 +6,8 @@ async def get_profile(username):
 
   async with aiohttp.ClientSession() as session:
     async with session.post(URL, data=json.dumps({'username': username})) as req:
-      return await req.json()
+      pfjson = await req.text()
+      return json.loads(pfjson)
 
 async def get_solution(name):
   URL_PB = 'https://api.solinfo.ro/v2.0/endpoint/page/problema'
