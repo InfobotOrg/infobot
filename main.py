@@ -1,5 +1,6 @@
 # github.com/RolandPetrean/infobot
 
+import asyncio
 import sys
 import discord
 from discord import app_commands
@@ -21,6 +22,7 @@ class Infobot(discord.Client):
     await tree.sync()
 
   async def on_ready(self):
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='pbinfo'))
     print('Ready')
 
 client = Infobot()
