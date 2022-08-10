@@ -6,6 +6,11 @@ from discord import app_commands
 from pbinfo.group import PbinfoGroup
 from solinfo.group import SolinfoGroup
 
+if len(sys.argv) != 2:
+  print('You need to pass the token of the bot as a single argument')
+  exit()
+
+
 class Infobot(discord.Client):
   def __init__(self):
     super().__init__(intents=discord.Intents.none())

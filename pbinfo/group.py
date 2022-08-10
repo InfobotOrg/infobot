@@ -63,7 +63,7 @@ class PbinfoGroup(app_commands.Group):
       return
     
     problems = pbinfo.process_problems(data['problems'])
-    embed = dsutil.create_embed(nume, f':white_check_mark: {len(problems["total_solved"])} Probleme rezolvate\n:no_entry: {len(problems["total_tried"])} Probleme încercate dar nerezolvate\n:triangular_flag_on_post: {problems["total"]} Surse trimise\n:checkered_flag: {data["success"]}% Success', [], colour=dsutil.LIGHT_BLUE)
+    embed = dsutil.create_embed(nume, f':white_check_mark: {len(problems["total_solved"])} Probleme rezolvate\n:no_entry: {len(problems["total_tried"])} Probleme încercate dar nerezolvate\n:triangular_flag_on_post: {problems["total"]} Surse trimise\n:checkered_flag: {data["success"]}% Succes', [], colour=dsutil.LIGHT_BLUE)
     for cls in range(9, 12):
       embed.add_field(name=f'Clasa a {cls}-a', value=f'{len(problems["solved"][f"{cls}"])} Probleme rezolvate - {len(problems["tried"][f"{cls}"])} Probleme nerezolvate', inline=False)
     embed.set_author(name=data['display_name'], url=f'https://www.pbinfo.ro/profil/{nume}', icon_url=data['avatar'])
