@@ -1,4 +1,3 @@
-import json
 from typing import Any
 import aiohttp
 from bs4 import BeautifulSoup

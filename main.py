@@ -1,13 +1,10 @@
 # github.com/RolandPetrean/infobot
 
-import os
-from dotenv import load_dotenv
+import sys
 import discord
 from discord import app_commands
 from pbinfo.group import PbinfoGroup
 from solinfo.group import SolinfoGroup
-
-load_dotenv()
 
 class Infobot(discord.Client):
   def __init__(self):
@@ -23,4 +20,4 @@ class Infobot(discord.Client):
 
 client = Infobot()
 tree = app_commands.CommandTree(client)
-client.run(os.environ.get('TOKEN'))
+client.run(sys.argv[1])
