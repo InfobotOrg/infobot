@@ -6,7 +6,7 @@ from solinfo import solinfo
 from util import dsutil, util
 
 pb = json.load(open('pbinfo/_pb.json'))
-solpb=json.load(open('solinfo/_solpb.json'))
+solpb=json.load(open('solinfo/_pb.json'))
 
 async def solinfo_autocomplete(interaction: discord.Interaction, current: str):
   auto = (app_commands.Choice(name=f'#{p["id"]} {p["name"]}', value=p['name']) for p in solpb if current.lower() in f'#{p["id"]} {p["name"]}')
@@ -19,7 +19,7 @@ class SolinfoGroup(app_commands.Group):
   @app_commands.command(name='solutie', description='Găsește soluția la o problemă')
   @app_commands.describe(nume='Numele problemei')
   @app_commands.autocomplete(nume=solinfo_autocomplete)
-  async def csolutie(self, interaction: discord.Interaction, nume: str):
+  async def solutie(self, interaction: discord.Interaction, nume: str):
     await interaction.response.defer()
 
     solutions, source = await solinfo.get_solution(nume)

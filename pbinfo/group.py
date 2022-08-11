@@ -30,16 +30,7 @@ class PbinfoGroup(app_commands.Group):
       await interaction.edit_original_response(embed=embed)
       return
 
-    embed = discord.Embed(title=f'Problema #{id} {data["name"]} - {data["solutions"]} Soluții', description=f'{data["categories"]}', colour=dsutil.LIGHT_BLUE)
-    dsutil.add_data(embed, 'Enunț', value=data['statement'])
-    dsutil.add_data(embed, name='Cerința', value=data['task'])
-    dsutil.add_data(embed, name='Date de intrare', value=data['input'])
-    dsutil.add_data(embed, name='Date de ieșire', value=data['output'])
-    dsutil.add_data(embed, name='Exemplu', value=data['example'])
-    if data['file_in']:
-      dsutil.add_data(embed, name='Exemplu', value=f'{data["file_in"]}\n```{data["in_example"]}```\n{data["file_out"]}\n```{data["out_example"]}```')
-    if data['author']:
-      embed.set_footer(text=f'Postată de {data["author"][0]}', icon_url=data['author'][1])
+    embed = dsutil.create_problem_embed(f'Problema #{data["id"]} {data["name"]} - {data["solutions"]} Soluții', data)
 
     # Link to problem button
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.pbinfo.ro/probleme/{id}', label='Problema')

@@ -1,4 +1,3 @@
-from typing import Any
 import aiohttp
 from bs4 import BeautifulSoup
 import re
@@ -13,9 +12,10 @@ async def get_problem(id: int):
         return {'error': page.status}
 
       soup = BeautifulSoup(await page.text(), 'html.parser')
-      data = dict.fromkeys(['error', 'categories', 'name', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
-      
-      # change format of code tags
+      data = dict.fromkeys(['error', 'categories', 'name', 'author', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      data['id'] = id
+
+      # Change format of code tags
       for code in soup.find_all('code'):
         code.string = f'`{code.string}`'
 
@@ -38,41 +38,39 @@ async def get_problem(id: int):
 
       article = soup.find('article', id='enunt')
       if article:
-        data['statement'] = article.find('p').get_text()
+        data['statement'] = util.text_find_next_until(article, 'h1')
       task_header = soup.find('h1', text=re.compile('Cerin.a'))
       if task_header:
-        data['task'] = task_header.find_next('p').get_text()
-        if data['statement'] == data['task']:
-          data['statement'] = None
+        data['task'] = util.text_find_next_until(task_header, 'h1')
 
       input_header = soup.find('h1', text='Date de intrare')
       output_header = soup.find('h1', text=re.compile('Date de ie.ire'))
       if input_header:
         if not output_header: # some problems have typos (ex. https://www.pbinfo.ro/probleme/1436)
-          output_header = input_header.find_next('h1')
+          output_header = input_header.find_next_sibling('h1')
         if output_header:
-          data['input'] = input_header.find_next('p').get_text()
-          data['output'] = output_header.find_next('p').get_text()
+          data['input'] = util.text_find_next_until(input_header, ['h1'])
+          data['output'] = util.text_find_next_until(output_header, ['h1'])
 
       example_header = soup.find('h1', text=re.compile('Exemplu+'))
       if example_header:
-        editableIn = example_header.find_next('pre')
+        editableIn = example_header.find_next_sibling('pre')
         if editableIn:
-          editableOut = editableIn.find_next('pre')
+          editableOut = editableIn.find_next_sibling('pre')
           if editableOut:
             data['file_in'] = editableIn.find_previous('p').get_text()
             data['in_example'] = editableIn.get_text()
             data['file_out'] = editableOut.find_previous('p').get_text()
             data['out_example'] = editableOut.get_text()
         if not data['file_in']:
-          example = example_header.find_next('p')
+          example = example_header.find_next_sibling('p')
           if example:
             data['example'] = example.get_text()
 
       for k, v in data.items():
         if type(v) == tuple:
           data[k] = (util.prettify(v[0]), util.prettify(v[1]))
-        elif v:
+        elif isinstance(v, str):
           data[k] = util.prettify(v)
       return data
 
@@ -89,7 +87,7 @@ async def get_account(name: str):
 
       last_name = soup.find('div', class_='well well-sm center').find('h2').find('span')
       data['last_name'] = last_name.get_text()
-      data['first_name'] = last_name.find_next('span').get_text()
+      data['first_name'] = last_name.find_next_sibling('span').get_text()
       data['display_name'] = f'{data["first_name"]} {data["last_name"]}'
       data['avatar'] = 'https://www.pbinfo.ro' + soup.find('div', class_='center padding18').find('img')['src']
       data['goal'] = 'https://www.pbinfo.ro' + soup.find('div', class_='panel-heading center').find('img')['src']
@@ -99,7 +97,7 @@ async def get_account(name: str):
         pbjson = await req.json(content_type='text/html')
         data['problems'] = pbjson['content']
         for k, v in data.items():
-          if type(v) == str:
+          if isinstance(v, str):
             data[k] = util.prettify(v)
         return data
 

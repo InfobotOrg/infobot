@@ -4,6 +4,7 @@ import asyncio
 import sys
 import discord
 from discord import app_commands
+from infoarena.group import InfoarenaGroup
 from pbinfo.group import PbinfoGroup
 from solinfo.group import SolinfoGroup
 
@@ -19,6 +20,7 @@ class Infobot(discord.Client):
   async def setup_hook(self):
     tree.add_command(PbinfoGroup())
     tree.add_command(SolinfoGroup())
+    tree.add_command(InfoarenaGroup())
     await tree.sync()
 
   async def on_ready(self):
