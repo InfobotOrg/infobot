@@ -18,6 +18,8 @@ async def get_problem(id: int):
       # Change format of code tags
       for code in soup.find_all('code'):
         code.string = f'`{code.string}`'
+      for li in soup.find('div', id='problema-wrapper').find_all('li'):
+        li.string = f'- {li.get_text()}'
 
       categories = soup.find('ol', class_='breadcrumb')
       if categories:

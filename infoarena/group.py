@@ -30,7 +30,7 @@ class InfoarenaGroup(app_commands.Group):
       await interaction.edit_original_response(embed=embed)
       return
     
-    embed = dsutil.create_problem_embed(f'{pb[nume]} ({nume})', data)
+    embed = dsutil.create_problem_embed(f'Problema {pb[nume]} ({nume})', data)
 
     # Link to problem button
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.infoarena.ro/problema/{nume}', label='Problema')
