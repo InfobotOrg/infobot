@@ -3,14 +3,12 @@
 import asyncio
 import sys
 import discord
+import os
+from dotenv import load_dotenv
 from discord import app_commands
 from infoarena.group import InfoarenaGroup
 from pbinfo.group import PbinfoGroup
 from solinfo.group import SolinfoGroup
-
-if len(sys.argv) != 2:
-  print('You need to pass the token of the bot as a single argument')
-  exit()
 
 class Infobot(discord.Client):
   def __init__(self):
@@ -26,6 +24,7 @@ class Infobot(discord.Client):
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='pbinfo'))
     print('Ready')
 
+load_dotenv()
 client = Infobot()
 tree = app_commands.CommandTree(client)
-client.run(sys.argv[1])
+client.run(os.environ.get('TOKEN'))
