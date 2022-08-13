@@ -27,15 +27,14 @@ load_dotenv()
 client = Infobot()
 tree = app_commands.CommandTree(client)
 
-@tree.command(name='info', description='Informații despre Infobot')
-async def info(interaction: discord.Interaction):
-  embed = dsutil.create_embed('Infobot', '', [
-    ('Invită', '[Invită](https://discord.com/oauth2/authorize?client_id=1006240882812539043&permissions=2147485696&scope=bot) Infobot pe server-ul tău.'),
+@tree.command(name='ajutor', description='Informații despre Infobot')
+async def ajutor(interaction: discord.Interaction):
+  embed = dsutil.create_embed('Informații', '[Adaugă pe server](https://discord.com/oauth2/authorize?client_id=1006240882812539043&permissions=2147485696&scope=bot)', [
     ('Despre', 'Infobot este un discord bot care poate prelucra date de pe [pbinfo](https://www.pbinfo.ro), [solinfo](https://www.solinfo.ro/) și [infoarena](https://www.infoarena.ro). Sursa poate fi găsită pe [github](https://github.com/RolandPetrean/infobot).'),
-    ('Librării folosite', f'Infobot a fost creat folosind [discordpy 2.0](https://github.com/Rapptz/discord.py) și [BeautifulSoup 4](https://pypi.org/project/beautifulsoup4/) pentru parsing.'),
+    ('Librării folosite', f'Am folosit [discordpy 2.0](https://github.com/Rapptz/discord.py) și [BeautifulSoup 4](https://pypi.org/project/beautifulsoup4/) pentru parsing.'),
     ('Mulțumesc', '- Contribuitorilor de pe github pentru ajutorul acordat;\n- Solinfo pentru că au un API și nu a trebuit să fac parsing :)')
   ], colour=dsutil.LIGHT_BLUE)
-  embed.set_footer(text='Versiunea 1.0.0');
+  embed.set_footer(text='Versiunea 1.0.1');
   await interaction.response.send_message(embed=embed)
 
 client.run(os.environ.get('TOKEN'))
