@@ -14,13 +14,7 @@ async def get_problem(name: str):
       soup = BeautifulSoup(await page.text(), 'html.parser')
       data = dict.fromkeys(['error', 'categories', 'name', 'statement', 'author', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
 
-      # Change format of tags
-      for sub in soup.find_all('sub'):
-        sub.string = f'[{sub.get_text()}]'
-      for var in soup.find_all('var'):
-        var.string = f'`{var.get_text()}`'
-      for li in soup.find_all('li'):
-        li.string = f'- {li.get_text()}'
+      util.prettifySoup(soup, 'main')
 
       data['categories'] = '*Arhiva de probleme*'
 

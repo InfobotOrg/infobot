@@ -1,3 +1,22 @@
+import re
+
+
+def prettifySoup(soup, id):
+  div = soup.find('div', id=id)
+
+  # Change format of tags
+  for sub in div.find_all('sub'):
+    sub.string = f'[{sub.get_text()}]'
+
+  for var in div.find_all('var'):
+    var.string = f'`{var.get_text()}`'
+  for code in div.find_all('code'):
+    code.string = f'`{code.get_text()}`'
+  for jax in div.find_all('span', class_='MathJax'):
+    jax.string = f'`{jax.get_text()}`'
+  for li in div.find_all('li'):
+    li.string = f'- {li.get_text()}'
+
 def prettify(text: str, length=330) -> str:
   while '  ' in text:
     text = text.replace('  ', ' ')

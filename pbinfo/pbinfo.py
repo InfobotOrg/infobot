@@ -15,11 +15,7 @@ async def get_problem(id: int):
       data = dict.fromkeys(['error', 'categories', 'name', 'author', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
       data['id'] = id
 
-      # Change format of code tags
-      for code in soup.find_all('code'):
-        code.string = f'`{code.string}`'
-      for li in soup.find('div', id='problema-wrapper').find_all('li'):
-        li.string = f'- {li.get_text()}'
+      util.prettifySoup(soup, 'problema-wrapper')
 
       categories = soup.find('ol', class_='breadcrumb')
       if categories:
@@ -38,9 +34,9 @@ async def get_problem(id: int):
         data['author'] = (author.get_text(), author.find('img')['src'])
       data['solutions'] = soup.find('span', class_='badge').get_text()
 
-      article = soup.find('article', id='enunt')
-      if article:
-        data['statement'] = util.text_find_next_until(article, 'h1')
+      divright = soup.find('div', class_='float-right')
+      if divright:
+        data['statement'] = util.text_find_next_until(divright, 'h1')
       task_header = soup.find('h1', text=re.compile('Cerin.a'))
       if task_header:
         data['task'] = util.text_find_next_until(task_header, 'h1')

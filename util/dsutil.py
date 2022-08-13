@@ -10,7 +10,10 @@ def add_data(embed: discord.Embed, name: str, value, inline=False):
 def create_embed(title: str, desc: str, fields, colour) -> discord.Embed:
   embed = discord.Embed(title=title, description=desc, colour=colour)
   for field in fields:
-    add_data(embed, field[0], field[1])
+    inline = False
+    if (len(field) == 3):
+      inline = field[2]
+    add_data(embed, field[0], field[1], inline=inline)
   return embed
 
 def create_error_embed(desc: str) -> discord.Embed:
