@@ -1,7 +1,12 @@
 import aiohttp
 import json
 
-async def get_profile(username):
+async def get_profile(username: str) -> dict:
+  """Return data about a solinfo account.
+  
+  username - the name of the account
+  """
+
   URL = 'https://api.solinfo.ro/v2.0/endpoint/page/profil'
 
   async with aiohttp.ClientSession() as session:
@@ -9,7 +14,11 @@ async def get_profile(username):
       pfjson = await req.text()
       return json.loads(pfjson)
 
-async def get_solution(name):
+async def get_solution(name: str) -> dict:
+  """Return data about a pbinfo problem's solution.
+  
+  name - the name of the problem"""
+
   URL_PB = 'https://api.solinfo.ro/v2.0/endpoint/page/problema'
   URL_SOL = 'https://api.solinfo.ro/v2.0/endpoint/page/problema-solutie'
 

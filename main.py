@@ -34,7 +34,7 @@ async def ajutor(interaction: discord.Interaction):
     ('Librării folosite', f'Am folosit [discordpy 2.0](https://github.com/Rapptz/discord.py) și [BeautifulSoup 4](https://pypi.org/project/beautifulsoup4/) pentru parsing.'),
     ('Mulțumesc', '- Contribuitorilor de pe github pentru ajutorul acordat;\n- Solinfo pentru că au un API și nu a trebuit să fac parsing :)')
   ], colour=dsutil.LIGHT_BLUE)
-  embed.set_footer(text='Versiunea 1.0.1');
+  embed.set_footer(text='Versiunea 1.0.1') # TODO probabil ca versiunea ar trebui sa fie intr-un fisier sau ceva
   await interaction.response.send_message(embed=embed)
 
 client.run(os.environ.get('TOKEN'))

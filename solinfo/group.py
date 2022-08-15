@@ -6,7 +6,7 @@ from solinfo import solinfo
 from util import dsutil, util
 
 pb = json.load(open('pbinfo/_pb.json'))
-solpb=json.load(open('solinfo/_pb.json'))
+solpb = json.load(open('solinfo/_pb.json'))
 
 async def solinfo_autocomplete(interaction: discord.Interaction, current: str):
   auto = (app_commands.Choice(name=f'#{p["id"]} {p["name"]}', value=p['name']) for p in solpb if current.lower() in f'#{p["id"]} {p["name"]}')
@@ -29,7 +29,7 @@ class SolinfoGroup(app_commands.Group):
         embed = dsutil.create_error_embed('Problema nu există.')
       await interaction.edit_original_response(embed=embed)
       return
-    id = pb[nume]
+    id = pb[nume.replace('-', '_')]
     sol = solutions[0]
     author = await solinfo.get_profile(sol['author']['username'])
 

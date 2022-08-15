@@ -3,11 +3,19 @@ import discord
 LIGHT_BLUE = 0xADD8FF
 RED = 0xFF0000
 
-def add_data(embed: discord.Embed, name: str, value, inline=False):
+def add_data(embed: discord.Embed, name: str, value: any, inline: bool=False):
+  """Add a field to an embed, but only if the value is truthy."""
   if value:
     embed.add_field(name=name, value=value, inline=inline)
 
-def create_embed(title: str, desc: str, fields, colour) -> discord.Embed:
+def create_embed(title: str, desc: str, fields: "list[tuple]", colour: hex) -> discord.Embed:
+  """Return a discord embed
+  
+  title -- the embed's title
+  desc -- the embed's description
+  fields -- a list of `(name, value, inline?)` tuples that are added via `add_data`
+  colour -- the embed's colour
+  """
   embed = discord.Embed(title=title, description=desc, colour=colour)
   for field in fields:
     inline = False
@@ -17,10 +25,18 @@ def create_embed(title: str, desc: str, fields, colour) -> discord.Embed:
   return embed
 
 def create_error_embed(desc: str) -> discord.Embed:
+  """Return an embed with an error.
+  
+  desc -- the description of the embed"""
   return create_embed('A apărut o eroare', desc, [], RED)
 
-def create_problem_embed(name, data) -> discord.Embed:
-  embed = create_embed(name, data['categories'], [
+def create_problem_embed(title: str, data: dict) -> discord.Embed:
+  """Return an embed representing problem data.
+
+  title -- the title of the embed
+  data -- the problem data
+  """
+  embed = create_embed(title, data['categories'], [
     ('Enunț', data['statement']),
     ('Cerința', data['task']),
     ('Date de intrare', data['input']),

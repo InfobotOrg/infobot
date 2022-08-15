@@ -4,6 +4,11 @@ import re
 import util.util as util
 
 async def get_problem(name: str):
+  """Return data about an infoarena problem.
+  
+  name -- the problem's name
+  """
+
   URL = f'https://www.infoarena.ro/problema/{name}'
   
   async with aiohttp.ClientSession() as session:

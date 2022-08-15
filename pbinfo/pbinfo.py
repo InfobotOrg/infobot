@@ -3,7 +3,12 @@ from bs4 import BeautifulSoup
 import re
 import util.util as util
 
-async def get_problem(id: int):
+async def get_problem(id: int) -> dict:
+  """Return data about a pbinfo problem.
+  
+  id -- the problem's id
+  """
+
   URL = f'https://www.pbinfo.ro/probleme/{str(id)}'
   
   async with aiohttp.ClientSession() as session:
@@ -73,6 +78,11 @@ async def get_problem(id: int):
       return data
 
 async def get_account(name: str):
+  """Return data about a pbinfo account.
+  
+  name -- the account's name
+  """
+
   URL_DOC = f'https://www.pbinfo.ro/profil/{name}'
   URL_PB = 'https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php'
 
@@ -99,7 +109,9 @@ async def get_account(name: str):
             data[k] = util.prettify(v)
         return data
 
-def process_problems(problems: list):
+def process_problems(problems: list) -> dict:
+  """Calculate relevant data from a list of problems."""
+  
   data = {}
 
   data['total'] = len(problems)

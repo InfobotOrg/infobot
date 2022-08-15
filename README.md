@@ -1,5 +1,5 @@
 # Infobot
-This is a Discord bot that can fetch data from sites such as [PbInfo](https://pbinfo.ro), [SolInfo](https://solinfo.ro) or [InfoArena](https://infoarena.ro).  
+This is a Discord bot that can fetch data from sites such as [PbInfo](https://pbinfo.ro), [SolInfo](https://solinfo.ro) and [InfoArena](https://infoarena.ro).  
 [Add the bot to a server.](https://discord.com/oauth2/authorize?client_id=1006240882812539043&permissions=2147485696&scope=bot)
 
 ## Config
