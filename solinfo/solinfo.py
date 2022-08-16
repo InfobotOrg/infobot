@@ -17,7 +17,8 @@ async def get_profile(username: str) -> dict:
 async def get_solution(name: str) -> dict:
   """Return data about a pbinfo problem's solution.
   
-  name - the name of the problem"""
+  name - the name of the problem
+  """
 
   URL_PB = 'https://api.solinfo.ro/v2.0/endpoint/page/problema'
   URL_SOL = 'https://api.solinfo.ro/v2.0/endpoint/page/problema-solutie'
