@@ -16,7 +16,7 @@ async def get_problem(name: str):
       if page.status != 200:
         return {'error': page.status}
 
-      soup = BeautifulSoup(await page.text(), 'html.parser')
+      soup = BeautifulSoup(await page.text(), 'lxml')
       data = dict.fromkeys(['error', 'categories', 'name', 'statement', 'author', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
 
       util.prettifySoup(soup, 'main')
