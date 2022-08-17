@@ -5,7 +5,6 @@ This is a Discord bot that can fetch data from sites such as [PbInfo](https://pb
 ## Config
 For the project to start, a `.env` file is needed having to following fields:
 - `TOKEN` - the discord api bot token
-- `GITHUB_TOKEN` - the github api token
 
 ## Run
 To run locally, you must have python 3.8 or higher (and pip) installed:

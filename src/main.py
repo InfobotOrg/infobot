@@ -31,12 +31,11 @@ tree = app_commands.CommandTree(client)
 @tree.command(name='ajutor', description='Informații despre Infobot')
 async def ajutor(interaction: discord.Interaction):
   contributors = [f'[{contrib[0]}]({contrib[1]})' for contrib in await github.get_contributors()]
-  contributors = ', '.join(contributors)
 
   embed = dsutil.create_embed('Informații', '[Adaugă pe server](https://discord.com/oauth2/authorize?client_id=1006240882812539043&permissions=2147485696&scope=bot)', [
     ('Despre', 'Infobot este un discord bot care poate prelucra date de pe [pbinfo](https://www.pbinfo.ro), [solinfo](https://www.solinfo.ro/) și [infoarena](https://www.infoarena.ro). Sursa poate fi găsită pe [github](https://github.com/RolandPetrean/infobot).'),
     ('Librării folosite', f'Am folosit [discordpy 2.0](https://github.com/Rapptz/discord.py) și [BeautifulSoup 4](https://pypi.org/project/beautifulsoup4/) pentru parsing.'),
-    ('Contribuitori', contributors)
+    (f'Contribuitori ({len(contributors)})', ', '.join(contributors))
   ], colour=dsutil.LIGHT_BLUE)
   await interaction.response.send_message(embed=embed)
 
