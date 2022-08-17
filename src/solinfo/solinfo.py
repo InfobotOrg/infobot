@@ -1,13 +1,15 @@
 import aiohttp
 import json
 
+BASE = 'https://api.solinfo.ro/v2.0/endpoint'
+
 async def get_profile(username: str) -> dict:
   """Return data about a solinfo account.
   
   username - the name of the account
   """
 
-  URL = 'https://api.solinfo.ro/v2.0/endpoint/page/profil'
+  URL = f'{BASE}/page/profil'
 
   async with aiohttp.ClientSession() as session:
     async with session.post(URL, data=json.dumps({'username': username})) as req:
@@ -20,8 +22,8 @@ async def get_solution(name: str) -> dict:
   name - the name of the problem
   """
 
-  URL_PB = 'https://api.solinfo.ro/v2.0/endpoint/page/problema'
-  URL_SOL = 'https://api.solinfo.ro/v2.0/endpoint/page/problema-solutie'
+  URL_PB = f'{BASE}/page/problema'
+  URL_SOL = f'{BASE}/page/problema-solutie'
 
   async with aiohttp.ClientSession() as session:
     async with session.post(URL_PB, data=json.dumps({'name': name})) as pb:

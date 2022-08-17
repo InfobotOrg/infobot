@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup
 import re
 import util.util as util
 
+BASE = 'https://www.pbinfo.ro'
+
 async def get_problem(id: int) -> dict:
   """Return data about a pbinfo problem.
   
   id -- the problem's id
   """
 
-  URL = f'https://www.pbinfo.ro/probleme/{str(id)}'
+  URL = f'{BASE}/probleme/{str(id)}'
   
   async with aiohttp.ClientSession() as session:
     async with session.get(URL) as page:
@@ -83,8 +85,8 @@ async def get_account(name: str):
   name -- the account's name
   """
 
-  URL_DOC = f'https://www.pbinfo.ro/profil/{name}'
-  URL_PB = 'https://www.pbinfo.ro/ajx-module/profil/json-jurnal.php'
+  URL_DOC = f'{BASE}/profil/{name}'
+  URL_PB = f'{BASE}/ajx-module/profil/json-jurnal.php'
 
   async with aiohttp.ClientSession() as session:
     async with session.get(URL_DOC) as page:
@@ -97,8 +99,8 @@ async def get_account(name: str):
       data['last_name'] = last_name.get_text()
       data['first_name'] = last_name.find_next_sibling('span').get_text()
       data['display_name'] = f'{data["first_name"]} {data["last_name"]}'
-      data['avatar'] = 'https://www.pbinfo.ro' + soup.find('div', class_='center padding18').find('img')['src']
-      data['goal'] = 'https://www.pbinfo.ro' + soup.find('div', class_='panel-heading center').find('img')['src']
+      data['avatar'] = BASE + soup.find('div', class_='center padding18').find('img')['src']
+      data['goal'] = BASE + soup.find('div', class_='panel-heading center').find('img')['src']
       data['success'] = soup.find('span', string='succes (%)').find_previous('span').get_text()
       
       async with session.get(URL_PB, params={'user': name}) as req:

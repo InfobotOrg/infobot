@@ -3,13 +3,15 @@ from bs4 import BeautifulSoup
 import re
 import util.util as util
 
+BASE = 'https://www.infoarena.ro'
+
 async def get_problem(name: str):
   """Return data about an infoarena problem.
   
   name -- the problem's name
   """
 
-  URL = f'https://www.infoarena.ro/problema/{name}'
+  URL = f'{BASE}/problema/{name}'
   
   async with aiohttp.ClientSession() as session:
     async with session.get(URL) as page:
@@ -30,7 +32,7 @@ async def get_problem(name: str):
       author = soup.find('span', class_='tiny-user')
       if author:
         author_username = soup.find('span', class_='username').get_text()
-        data['author'] = (f'{author.find("a").get_text()} ({author_username})', f'https://www.infoarena.ro{author.find("img")["src"]}')
+        data['author'] = (f'{author.find("a").get_text()} ({author_username})', BASE+author.find('img')['src'])
 
       task_header = soup.find('h2', text=re.compile('Cerin.a'))
       if task_header:
