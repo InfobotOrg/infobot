@@ -60,7 +60,32 @@ class PbinfoGroup(app_commands.Group):
     embed.set_author(name=data['display_name'], url=f'https://www.pbinfo.ro/profil/{nume}', icon_url=data['avatar'])
     embed.set_thumbnail(url=data['goal'])
 
+    # Last 3 problems solved
+    lastProblems = []
+    i = 0
+    while i < len(data['problems']) and len(lastProblems) < 3:
+      if int(data['problems'][i]['scor']) == 100:
+        exists = False
+        for x in lastProblems:
+          if x['id'] == data['problems'][i]['id']:
+            exists = True
+        
+        if not exists:
+          lastProblems.insert(len(lastProblems), data['problems'][i])
+      
+      i += 1
+
+    if problems['total_solved']:
+      embedValue = ''
+      for x in lastProblems:
+        embedValue += f'[{x["denumire"]}](https://www.pbinfo.ro/probleme/{x["id"]}), '
+      embedValue = embedValue[:-2]
+      
+      embed.add_field(name='Ultimele probleme rezolvate', value=embedValue, inline=False)
+
     # Link to account button
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.pbinfo.ro/profil/{nume}', label='Cont')
     view = discord.ui.View().add_item(btn)
+
+
     await interaction.edit_original_response(view=view, embed=embed)
