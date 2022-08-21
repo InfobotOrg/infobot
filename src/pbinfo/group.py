@@ -59,7 +59,7 @@ class PbinfoGroup(app_commands.Group):
 
     # Last problems solved    
     embedValue = ', '.join(f'[{x["denumire"]}](https://www.pbinfo.ro/probleme/{x["id"]})' for x in problems['total_solved'][:5])
-    dsutil.add_data(embed, 'Jurnal', embedValue)
+    dsutil.add_data(embed, 'Jurnal probleme', embedValue)
 
     # Solved by classes
     for cls in range(9, 12):
