@@ -134,5 +134,4 @@ def process_problems(problems: list) -> dict:
     data['tried'][str(cls)] = data['tried'][str(cls)].difference(data['solved'][str(cls)])
   data['total_tried'] = data['total_tried'].difference(data['total_solved'])
 
-
   return data
