@@ -4,14 +4,17 @@ import re
 import util.util as util
 
 BASE = 'https://www.infoarena.ro'
+VARENA_BASE = 'https://www.varena.ro'
 
-async def get_problem(name: str):
+async def get_problem(name: str, varena: bool):
   """Return data about an infoarena problem.
   
   name -- the problem's name
+  varena -- whether the problem is from varena
   """
 
-  URL = f'{BASE}/problema/{name}'
+  base = BASE if not varena else VARENA_BASE
+  URL = f'{base}/problema/{name}'
   
   async with aiohttp.ClientSession() as session:
     async with session.get(URL) as page:
@@ -24,6 +27,8 @@ async def get_problem(name: str):
       util.prettifySoup(soup, 'main')
 
       data['categories'] = '*Arhiva de probleme*'
+      if varena:
+        data['categories'] = '*Arhiva de probleme varena*'
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:
@@ -32,7 +37,7 @@ async def get_problem(name: str):
       author = soup.find('span', class_='tiny-user')
       if author:
         author_username = soup.find('span', class_='username').get_text()
-        data['author'] = (f'{author.find("a").get_text()} ({author_username})', BASE+author.find('img')['src'])
+        data['author'] = (f'{author.find("a").get_text()} ({author_username})', base+author.find('img')['src'])
 
       task_header = soup.find('h2', text=re.compile('Cerin.a'))
       if task_header:
