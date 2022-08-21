@@ -43,7 +43,6 @@ def text_find_next_until(el: bs4.element.PageElement, end_t: str) -> str:
 
   el -- the starting BeautifulSoup element
   end_t -- the name of the final tag
-  Returns a string with the concatenated text
   """
 
   text = ''

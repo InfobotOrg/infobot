@@ -114,24 +114,23 @@ async def get_account(name: str):
 def process_problems(problems: list) -> dict:
   """Calculate relevant data from a list of problems."""
   
-  data = {}
-
-  data['total'] = len(problems)
-  data['total_solved'] = set()
-  data['total_tried'] = set()
-  data['solved'] = {'9': set(), '10': set(), '11': set()}
-  data['tried'] = {'9': set(), '10': set(), '11': set()}
-
-  for problem in problems:
-    if (int(problem['scor']) == 100):
-      data['solved'][problem['clasa']].add(problem['id'])
-      data['total_solved'].add(problem['id'])
-    else:
-      data['tried'][problem['clasa']].add(problem['id'])
-      data['total_tried'].add(problem['id'])
+  data = {'total_solved': [], 'total_tried': [], 'solved': {'9': [], '10': [], '11': []}, 'tried': {'9': [], '10': [], '11': []}}
   
-  for cls in range(9, 12):
-    data['tried'][str(cls)] = data['tried'][str(cls)].difference(data['solved'][str(cls)])
-  data['total_tried'] = data['total_tried'].difference(data['total_solved'])
-
+  for problem in problems: # Solved problems
+    problem.pop('data_upload') # We don't care about the date, and it messes up containment checks
+    if int(problem['scor']) == 100:
+      problem.pop('scor') # Same thing, don't need score after this point
+      if problem not in data['total_solved']:
+        data['solved'][problem['clasa']].append(problem)
+        data['total_solved'].append(problem)
+  
+  for problem in problems: # Unsolved problems
+    if 'scor' in problem:
+      problem.pop('scor') # In the previous step only problems with 100 points got the score removed
+    if problem not in data['total_solved'] and problem not in data['total_tried']:
+      data['tried'][problem['clasa']].append(problem)
+      data['total_tried'].append(problem)
+  
+  data['total_sub'] = len(problems)
+  data['total'] = data['total_solved'] + data['total_tried']
   return data

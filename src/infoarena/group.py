@@ -9,6 +9,7 @@ pb=json.load(open('infoarena/_pb.json'))
 varena_pb=json.load(open('infoarena/_varena_pb.json'))
 
 async def problema_autocomplete(interaction: discord.Interaction, current: str):
+  # autocomplete for both infoarena and varena
   auto = [app_commands.Choice(name=f'{v} ({k})', value=k) for k,v in pb.items() if current.lower() in f'{v.lower()} ({k})']
   auto.extend([app_commands.Choice(name=f'{v} ({k})', value=f'varena_{k}') for k,v in varena_pb.items() if current.lower() in f'varena {v.lower()} ({k})'])
   return list(itertools.islice(auto, 10)) # autocomplete up to 10 items

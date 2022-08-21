@@ -55,24 +55,11 @@ class PbinfoGroup(app_commands.Group):
 
     # General info
     problems = pbinfo.process_problems(data['problems'])
-    embed = dsutil.create_embed(nume, f':white_check_mark: {len(problems["total_solved"])} Probleme rezolvate\n:no_entry: {len(problems["total_tried"])} Probleme încercate dar nerezolvate\n:triangular_flag_on_post: {problems["total"]} Surse trimise\n:checkered_flag: {data["success"]}% Succes', [], colour=dsutil.LIGHT_BLUE)
+    embed = dsutil.create_embed(nume, f':white_check_mark: {len(problems["total_solved"])} Probleme rezolvate\n:no_entry: {len(problems["total_tried"])} Probleme încercate dar nerezolvate\n:triangular_flag_on_post: {problems["total_sub"]} Surse trimise\n:checkered_flag: {data["success"]}% Succes', [], colour=dsutil.LIGHT_BLUE)
 
-    # Last 3 problems solved
-    lastProblems = []
-    i = 0
-    while i < len(data['problems']) and len(lastProblems) < 3:
-      if int(data['problems'][i]['scor']) == 100:
-        exists = False
-        for x in lastProblems:
-          if x['id'] == data['problems'][i]['id']:
-            exists = True
-        
-        if not exists:
-          lastProblems.insert(len(lastProblems), data['problems'][i])
-      
-      i += 1
-    embedValue = ', '.join(f'[{x["denumire"]}](https://www.pbinfo.ro/probleme/{x["id"]})' for x in lastProblems)
-    dsutil.add_data(embed, 'Jurnal probleme', embedValue)
+    # Last problems solved    
+    embedValue = ', '.join(f'[{x["denumire"]}](https://www.pbinfo.ro/probleme/{x["id"]})' for x in problems['total_solved'][:5])
+    dsutil.add_data(embed, 'Jurnal', embedValue)
 
     # Solved by classes
     for cls in range(9, 12):

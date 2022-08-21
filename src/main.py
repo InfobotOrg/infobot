@@ -28,6 +28,7 @@ load_dotenv()
 client = Infobot()
 tree = app_commands.CommandTree(client)
 
+# TODO maybe move this to a separate group?
 @tree.command(name='ajutor', description='Informații despre Infobot')
 async def ajutor(interaction: discord.Interaction):
   contributors = [f'[{contrib[0]}]({contrib[1]})' for contrib in await github.get_contributors()]
