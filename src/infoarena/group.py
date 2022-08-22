@@ -43,6 +43,6 @@ class InfoarenaGroup(app_commands.Group):
       embed = dsutil.create_problem_embed(f'Problema {pb[nume]} ({nume})', data)
 
     # Link to problem button
-    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.infoarena.ro/problema/{nume}', label='Problema')
+    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.{"varena" if varena else "infoarena"}.ro/problema/{nume}', label='Problema')
     view = discord.ui.View().add_item(btn)
     await interaction.edit_original_response(embed=embed, view=view)
