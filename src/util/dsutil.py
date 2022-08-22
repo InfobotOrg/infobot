@@ -59,7 +59,7 @@ def create_problem_embed(title: str, data: dict) -> discord.Embed:
     ('Exemplu', data['example'])
   ], colour=LIGHT_BLUE)
   if data['file_in']:
-    add_data(embed, name='Exemplu', value=f'**{data["file_in"].replace("`", "")}**\n```{data["in_example"]}```\n**{data["file_out"].replace("`", "")}**\n```{data["out_example"]}```')
+    add_data(embed, name='Exemplu', value=f'**{data["file_in"].replace("`", "")}**\n```\n{data["in_example"]}```\n**{data["file_out"].replace("`", "")}**\n```\n{data["out_example"]}```')
   if data['author']:
     embed.set_footer(text=f'Postată de {data["author"][0]}', icon_url=data['author'][1])
   return embed

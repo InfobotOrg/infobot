@@ -10,15 +10,18 @@ def prettifySoup(soup: bs4.BeautifulSoup, id: str):
   div = soup.find(id=id)
 
   # Change format of tags
+  for em in div.find_all('em'):
+    em.string = f'*{em.get_text()}*'
+  for i in div.find_all('i'):
+    i.string = f'*{i.get_text()}*'
   for sub in div.find_all('sub'):
     sub.string = f'[{sub.get_text()}]'
-
   for var in div.find_all('var'):
     var.string = f'`{var.get_text()}`'
   for code in div.find_all('code'):
     code.string = f'`{code.get_text()}`'
-  for jax in div.find_all('span', class_='MathJax'): # TODO MathJax nu merge, debug later
-    jax.string = f'`{jax.get_text()}`'
+  #for jax in div.find_all('span', class_='MathJax'): # TODO https://github.com/RolandPetrean/infobot/issues/5
+  #  jax.string = f'`{jax.get_text()}`'
   for li in div.find_all('li'):
     li.string = f'- {li.get_text()}'
 
