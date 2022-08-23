@@ -5,8 +5,8 @@ from discord import app_commands
 from solinfo import solinfo
 from util import dsutil, util
 
-pb = json.load(open('pbinfo/_pb.json'))
-solinfo_pb = json.load(open('solinfo/_pb.json'))
+pb = json.load(open('../gen/output/pbinfo.json'))
+solinfo_pb = json.load(open('../gen/output/solinfo.json'))
 
 async def solinfo_autocomplete(interaction: discord.Interaction, current: str):
   auto = (app_commands.Choice(name=f'#{v} {k}', value=k) for k,v in solinfo_pb.items() if current.lower() in f'#{v} {k}')

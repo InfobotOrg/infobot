@@ -6,14 +6,14 @@ import util.util as util
 BASE = 'https://www.infoarena.ro'
 VARENA_BASE = 'https://www.varena.ro'
 
-async def get_problem(name: str, varena: bool):
+async def get_problem(name: str, archive: str):
   """Return data about an infoarena problem.
   
   name -- the problem's name
-  varena -- whether the problem is from varena
+  archive -- the archive to which the problem belongs
   """
 
-  base = BASE if not varena else VARENA_BASE
+  base = VARENA_BASE if archive == 'varena' else BASE
   URL = f'{base}/problema/{name}'
   
   async with aiohttp.ClientSession() as session:
@@ -26,9 +26,17 @@ async def get_problem(name: str, varena: bool):
 
       util.prettifySoup(soup, 'main')
 
-      data['categories'] = '*Arhiva de probleme*'
-      if varena:
-        data['categories'] = '*Arhiva de probleme varena*'
+      # Didn't use a match statement because it is only supported in Python 3.10+
+      if archive == 'pb':
+        data['categories'] = '*Arhiva de probleme*'
+      elif archive == 'edu':
+        data['categories'] = '*Arhiva educațională*'
+      elif archive == 'monthly':
+        data['categories'] = '*Arhiva monthly*'
+      elif archive == 'acm':
+        data['categories'] = '*Arhiva ACM*'
+      elif archive == 'varena':
+        data['categories'] = '*Arhiva de probleme varena'
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:

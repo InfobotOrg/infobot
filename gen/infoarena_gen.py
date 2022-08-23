@@ -4,12 +4,12 @@ import asyncio
 import json
 from bs4 import BeautifulSoup
 
-BASE = 'https://www.infoarena.ro/'
 ARCHIVES = {
-  'pb': 'arhiva',
-  'edu': 'arhiva-educationala',
-  'monthly': 'arhiva-monthly',
-  'acm': 'arhiva-acm'
+  'pb': 'https://www.infoarena.ro/arhiva',
+  'edu': 'https://www.infoarena.ro/arhiva-educationala',
+  'monthly': 'https://www.infoarena.ro/arhiva-monthly',
+  'acm': 'https://www.infoarena.ro/arhiva-acm',
+  'varena': 'https://www.varena.ro'
 }
 
 async def generate(filename: str):
@@ -20,12 +20,12 @@ async def generate(filename: str):
     sys.stdout.write(f'=> Generating "{archive_name}" archive problem data (')
 
     async with aiohttp.ClientSession() as session:
-      async with session.get(BASE+url) as start_req:
+      async with session.get(url) as start_req:
         start_soup = BeautifulSoup(await start_req.read(), 'lxml')
         total = int(start_soup.find('span', class_='count').get_text().split('(')[1].split(' ')[0])
         total = int(total/250)+1
         for i in range(total):
-          async with session.get(BASE+url+f'?display+entries=250&first_entry={250*i}') as req:
+          async with session.get(url+f'?display+entries=250&first_entry={250*i}') as req:
             soup = BeautifulSoup(await req.read(), 'lxml')
             tasks = soup.find_all('td', class_='task')
             for task in tasks:
