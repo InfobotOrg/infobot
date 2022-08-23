@@ -31,7 +31,7 @@ async def generate(filename: str):
             for task in tasks:
               task = task.find('a')
               id = task['href'].split('/')[2]
-              data[id] = {'name': task.get_text(), 'archive': archive_name}
+              data[f'{archive_name}${id}'] = task.get_text()
           sys.stdout.write(f'{i+1}/{total})')
           sys.stdout.flush()
           sys.stdout.write('\b'*(len(str(i+1)) + len(str(total)) + 2))

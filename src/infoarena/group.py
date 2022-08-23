@@ -8,7 +8,7 @@ from util import dsutil
 pb=json.load(open('../gen/output/infoarena.json'))
 
 async def problema_autocomplete(interaction: discord.Interaction, current: str):
-  auto = [app_commands.Choice(name=f'{v["name"]} ({k})', value=f'{v["archive"]}${k}') for k,v in pb.items() if current.lower() in f'{v["archive"].lower()} {v["name"].lower()} ({k})']
+  auto = [app_commands.Choice(name=f'{v} ({k.split("$")[1]})', value=k) for k,v in pb.items() if current.lower() in f'{k.split("$")[0]} {v.lower()} ({k.split("$")[1]})']
   return list(itertools.islice(auto, 10)) # autocomplete up to 10 items
 
 class InfoarenaGroup(app_commands.Group):
@@ -32,7 +32,7 @@ class InfoarenaGroup(app_commands.Group):
       await interaction.edit_original_response(embed=embed)
       return
     
-    embed = dsutil.create_problem_embed(f'Problema {pb[name]["name"]} ({name})', data)
+    embed = dsutil.create_problem_embed(f'Problema {pb[nume]} ({name})', data)
 
     # Link to problem button
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.{"varena" if archive == "varena" else "infoarena"}.ro/problema/{nume}', label='Problema')

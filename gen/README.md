@@ -4,11 +4,9 @@ This folder contains all of the code necessary to generate JSON files that conta
 ## pbinfo / solinfo
 The pbinfo and solinfo JSON files have the format `{name: id}`.
 ## infoarena
-The infoarena JSON file has the format `{id: {"name": name, "archive": archive}`. Note that unlike pbinfo, infoarena doesn't use numeric IDs. `archive` is one of the following:
-- `pb` - Arhiva de probleme
-- `edu` - Arhiva educațională
-- `monthly` - Arhiva monthly
-- `acm` - Arhiva ACM
-- `varena` - Arhiva de probleme varena
-
-Due to Discord limitations, JSON cannot be sent through interactions, so in code the archive may also appear as a prefix before the ID.
+The infoarena JSON file has the format `{id: name}`. Note that unlike pbinfo, infoarena doesn't use numeric IDs. Also, due to Discord limitations, JSON cannot be sent through interactions, so `id` will also have a prefix indicating the archive it belongs to, with `$` as a separator:
+- `pb$` - Arhiva de probleme
+- `edu$` - Arhiva educațională
+- `monthly$` - Arhiva monthly
+- `acm$` - Arhiva ACM
+- `varena$` - Arhiva de probleme varena
