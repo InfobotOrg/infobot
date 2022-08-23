@@ -25,8 +25,6 @@ class SolinfoGroup(app_commands.Group):
     solutions, source = await solinfo.get_solution(nume)
     if len(solutions) == 0:
       embed = dsutil.create_error_embed('Problema nu are nicio soluție.')
-      if nume not in pb:
-        embed = dsutil.create_error_embed('Problema nu există.')
       await interaction.edit_original_response(embed=embed)
       return
     id = solinfo_pb[nume]
