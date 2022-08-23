@@ -5,8 +5,8 @@ from discord import app_commands
 from solinfo import solinfo
 from util import dsutil, util
 
-pb = json.load(open('pbinfo/_pb.json'))
-solinfo_pb = json.load(open('solinfo/_pb.json'))
+pb = json.load(open('../gen/output/pbinfo.json'))
+solinfo_pb = json.load(open('../gen/output/solinfo.json'))
 
 async def solinfo_autocomplete(interaction: discord.Interaction, current: str):
   auto = (app_commands.Choice(name=f'#{v} {k}', value=k) for k,v in solinfo_pb.items() if current.lower() in f'#{v} {k}')
@@ -25,8 +25,6 @@ class SolinfoGroup(app_commands.Group):
     solutions, source = await solinfo.get_solution(nume)
     if len(solutions) == 0:
       embed = dsutil.create_error_embed('Problema nu are nicio soluție.')
-      if nume not in pb:
-        embed = dsutil.create_error_embed('Problema nu există.')
       await interaction.edit_original_response(embed=embed)
       return
     id = solinfo_pb[nume]

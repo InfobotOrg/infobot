@@ -5,7 +5,7 @@ from discord import app_commands
 from pbinfo import pbinfo
 from util import dsutil
 
-pb=json.load(open('pbinfo/_pb.json'))
+pb=json.load(open('../gen/output/pbinfo.json'))
 
 async def problema_autocomplete(interaction: discord.Interaction, current: str):
   auto = (app_commands.Choice(name=f'#{v} {k}', value=v) for k,v in pb.items() if current.lower() in f'#{v} {k.lower()}')
