@@ -41,9 +41,9 @@ async def get_problem(id: int) -> dict:
         data['author'] = (author.get_text(), author.find('img')['src'])
       data['solutions'] = soup.find('span', class_='badge').get_text()
 
-      divright = soup.find('div', class_='float-right')
-      if divright:
-        data['statement'] = util.text_find_next_until(divright, 'h1')
+      statement_header = soup.find('h1', text='Enun.')
+      if statement_header:
+        data['statement'] = util.text_find_next_until(statement_header, 'h1')
       task_header = soup.find('h1', text=re.compile('Cerin.a'))
       if task_header:
         data['task'] = util.text_find_next_until(task_header, 'h1')
