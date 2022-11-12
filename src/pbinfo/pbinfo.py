@@ -42,6 +42,8 @@ async def get_problem(id: int) -> dict:
       data['solutions'] = soup.find('span', class_='badge').get_text()
 
       statement_header = soup.find('h1', text=re.compile('Enun.'))
+      if not statement_header:
+        statement_header = soup.find('article', id='enunt').find('p')
       if statement_header:
         data['statement'] = util.text_find_next_until(statement_header, 'h1')
       task_header = soup.find('h1', text=re.compile('Cerin.a'))

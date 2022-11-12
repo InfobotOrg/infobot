@@ -50,6 +50,9 @@ def text_find_next_until(el: bs4.element.PageElement, end_t: str) -> str:
 
   text = ''
 
+  if el.name == 'p':
+    text += '\n'+el.get_text()
+
   sbs = el.find_next_siblings()
   for s in sbs:
     if s.name in end_t:
