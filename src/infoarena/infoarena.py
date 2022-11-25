@@ -114,7 +114,10 @@ async def get_monitor(user: str, task: str, varena: bool):
       data = {'error': None, 'evals': []}
       soup = BeautifulSoup(await page.text(), 'lxml')
 
-      monitor = soup.find('table', class_='monitor').find('tbody')
+      table = soup.find('table', class_='monitor')
+      if not table:
+        return {'error': 404}
+      monitor = table.find('tbody')
       rows = monitor.find_all('tr')
 
       for row in rows:

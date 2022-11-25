@@ -79,7 +79,7 @@ class InfoarenaGroup(app_commands.Group):
     varena = (archive=='varena')
     data = await infoarena.get_monitor(nume, problema, varena)
     if data['error']:
-      embed = dsutil.create_error_embed('Cauza este necunoscută.')
+      embed = dsutil.create_error_embed('Nu există acest utilizator/problemă' if data['error']==404 else 'Cauza este necunoscută.')
       await interaction.edit_original_response(embed=embed)
       return
 
