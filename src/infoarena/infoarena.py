@@ -134,7 +134,7 @@ async def get_monitor(user: str, task: str):
         curr['task'] = util.prettify(task.get_text(), 20)
         curr['task_link'] = task.find('a')['href'].lower().split('/problema/')[1]
         curr['points'] = row.find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
-        if curr['points'] == 'Evaluare completa':
+        if ':' not in curr['points']:
           curr['points'] = '???'
         else:
           curr['points'] = curr['points'].split(': ')[1].split(' ')[0]
