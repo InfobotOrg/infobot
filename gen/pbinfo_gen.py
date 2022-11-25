@@ -4,7 +4,7 @@ import asyncio
 import json
 from bs4 import BeautifulSoup
 
-MAX_PB = 4200 # Increase if needed
+MAX_PB = 4300 # Increase if needed
 
 async def generate(filename: str):
   """Generate a JSON file that contains pbinfo problem data."""

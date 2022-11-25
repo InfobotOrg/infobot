@@ -73,5 +73,4 @@ class PbinfoGroup(app_commands.Group):
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.pbinfo.ro/profil/{nume}', label='Cont')
     view = discord.ui.View().add_item(btn)
 
-
     await interaction.edit_original_response(view=view, embed=embed)

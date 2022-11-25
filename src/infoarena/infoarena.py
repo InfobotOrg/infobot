@@ -26,17 +26,7 @@ async def get_problem(name: str, archive: str):
 
       util.prettifySoup(soup, 'main')
 
-      # Didn't use a match statement because it is only supported in Python 3.10+
-      if archive == 'pb':
-        data['categories'] = '*Arhiva de probleme*'
-      elif archive == 'edu':
-        data['categories'] = '*Arhiva educațională*'
-      elif archive == 'monthly':
-        data['categories'] = '*Arhiva monthly*'
-      elif archive == 'acm':
-        data['categories'] = '*Arhiva ACM*'
-      elif archive == 'varena':
-        data['categories'] = '*Arhiva de probleme varena'
+      data['categories'] = util.get_category(archive)
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:
@@ -73,4 +63,76 @@ async def get_problem(name: str, archive: str):
           data[k] = (util.prettify(v[0]), util.prettify(v[1]))
         elif v:
           data[k] = util.prettify(v)
+      return data
+
+async def get_account(name: str, varena: bool):
+  """Return data about an infoarena account.
+  
+  name -- the account's name
+  varena -- whether the account is on varena"""
+
+  base = VARENA_BASE if varena else BASE
+  URL = f'{base}/utilizator/{name}?action=stats'
+
+  async with aiohttp.ClientSession() as session:
+    async with session.get(URL) as page:
+      if page.status != 200 or 'utilizator' not in str(page.url):
+        return {'error': page.status}
+
+      data = {'error': None}
+      soup = BeautifulSoup(await page.text(), 'lxml')
+      util.prettifySoup(soup, 'main')
+
+      mainblock = soup.find('div', id='main')
+      infotable = mainblock.find('div', class_='wiki_text_block').find('table')
+
+      data['avatar'] = f'{base}/avatar/full/{name}'
+      data['display_name'] = infotable.find('tr').find('td').find_next_sibling('td').get_text()
+      data['rating'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').get_text()
+      data['statut'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').get_text()
+      
+      data['solved'] = mainblock.find('span', class_='task_enum').get_text().split('Total: ')[1].split(' ')[0]
+      data['unsolved'] = mainblock.find('h3', text='Probleme incercate').find_next('span', class_='task_enum').get_text().split('Total: ')[1].split(' ')[0]
+
+      return data
+  
+async def get_monitor(user: str, task: str, varena: bool):
+  """Return data about the infoarena monitor
+  
+  user -- a specific user
+  task -- a specific problem's name
+  varena -- whether the monitor is varena's"""
+
+  base = VARENA_BASE if varena else BASE
+  URL = f'{base}/monitor?only_table=1&first_entry=0&display_entries=15&user={user}&task={task}'
+
+  async with aiohttp.ClientSession() as session:
+    async with session.get(URL) as page:
+      if page.status != 200:
+        return {'error': page.status}
+      
+      data = {'error': None, 'evals': []}
+      soup = BeautifulSoup(await page.text(), 'lxml')
+
+      monitor = soup.find('table', class_='monitor').find('tbody')
+      rows = monitor.find_all('tr')
+
+      for row in rows:
+        curr = {}
+
+        user = row.find('td').find_next_sibling('td').find('span', class_='tiny-user')
+        task = row.find('td').find_next_sibling('td').find_next_sibling('td')
+        curr['id'] = row.find('td').get_text().split('#')[1]
+        curr['display_name'] = user.find('a').get_text()
+        curr['username'] = user.find('span').get_text()
+        curr['task'] = util.prettify(task.get_text(), 20)
+        curr['task_link'] = task.find('a')['href'].lower().split('/problema/')[1]
+        curr['points'] = row.find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
+        if ':' not in curr['points']:
+          curr['points'] = '???'
+        else:
+          curr['points'] = curr['points'].split(': ')[1].split(' ')[0]
+
+        data['evals'].append(curr)
+      
       return data
