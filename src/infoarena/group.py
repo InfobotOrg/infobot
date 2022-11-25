@@ -58,7 +58,7 @@ class InfoarenaGroup(app_commands.Group):
       ('Rating', data['rating']),
       ('Statut', data['statut']),
     ], colour=dsutil.LIGHT_BLUE)
-    embed.set_author(name=data['display_name'], url=f'https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{nume}', icon_url={VARENA_ICON if varena else INFOARENA_ICON})
+    embed.set_author(name=data['display_name'], url=f'https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{nume}', icon_url=VARENA_ICON if varena else INFOARENA_ICON)
 
     btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{nume}', label='Cont')
     view = discord.ui.View().add_item(btn)

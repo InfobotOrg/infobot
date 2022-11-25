@@ -75,8 +75,8 @@ async def get_account(name: str, varena: bool):
   URL = f'{base}/utilizator/{name}?action=stats'
 
   async with aiohttp.ClientSession() as session:
-    async with session.get(URL, allow_redirects=False) as page:
-      if page.status != 200: 
+    async with session.get(URL) as page:
+      if page.status != 200 or 'utilizator' not in str(page.url):
         return {'error': page.status}
 
       data = {'error': None}
