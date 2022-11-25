@@ -26,17 +26,7 @@ async def get_problem(name: str, archive: str):
 
       util.prettifySoup(soup, 'main')
 
-      # Didn't use a match statement because it is only supported in Python 3.10+
-      if archive == 'pb':
-        data['categories'] = '*Arhiva de probleme*'
-      elif archive == 'edu':
-        data['categories'] = '*Arhiva educațională*'
-      elif archive == 'monthly':
-        data['categories'] = '*Arhiva monthly*'
-      elif archive == 'acm':
-        data['categories'] = '*Arhiva ACM*'
-      elif archive == 'varena':
-        data['categories'] = '*Arhiva de probleme varena*'
+      data['categories'] = util.get_category(archive)
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:
@@ -75,16 +65,18 @@ async def get_problem(name: str, archive: str):
           data[k] = util.prettify(v)
       return data
 
-async def get_account(name: str):
+async def get_account(name: str, varena: bool):
   """Return data about an infoarena account.
   
-  name -- the account's name"""
+  name -- the account's name
+  varena -- whether the account is on varena"""
 
-  URL = f'{BASE}/utilizator/{name}?action=stats'
+  base = VARENA_BASE if varena else BASE
+  URL = f'{base}/utilizator/{name}?action=stats'
 
   async with aiohttp.ClientSession() as session:
-    async with session.get(URL) as page:
-      if page.status != 200:
+    async with session.get(URL, allow_redirects=False) as page:
+      if page.status != 200: 
         return {'error': page.status}
 
       data = {'error': None}
@@ -94,7 +86,7 @@ async def get_account(name: str):
       mainblock = soup.find('div', id='main')
       infotable = mainblock.find('div', class_='wiki_text_block').find('table')
 
-      data['avatar'] = f'{BASE}/avatar/full/{name}'
+      data['avatar'] = f'{base}/avatar/full/{name}'
       data['display_name'] = infotable.find('tr').find('td').find_next_sibling('td').get_text()
       data['rating'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').get_text()
       data['statut'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').get_text()
@@ -104,13 +96,15 @@ async def get_account(name: str):
 
       return data
   
-async def get_monitor(user: str, task: str):
+async def get_monitor(user: str, task: str, varena: bool):
   """Return data about the infoarena monitor
   
   user -- a specific user
-  task -- a specific problem's name"""
+  task -- a specific problem's name
+  varena -- whether the monitor is varena's"""
 
-  URL = f'{BASE}/monitor?only_table=1&first_entry=0&display_entries=15&user={user}&task={task}'
+  base = VARENA_BASE if varena else BASE
+  URL = f'{base}/monitor?only_table=1&first_entry=0&display_entries=15&user={user}&task={task}'
 
   async with aiohttp.ClientSession() as session:
     async with session.get(URL) as page:

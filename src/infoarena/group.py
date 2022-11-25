@@ -4,9 +4,11 @@ import discord
 from discord import app_commands
 from infoarena import infoarena
 from util import dsutil
+from util import util
 
 pb=json.load(open('../gen/output/infoarena.json'))
 INFOARENA_ICON = 'https://i.ibb.co/2vVNk5S/infoarena.png'
+VARENA_ICON = 'https://i.ibb.co/Xybdcps/image.png'
 
 async def problema_autocomplete(interaction: discord.Interaction, current: str):
   auto = [app_commands.Choice(name=f'{v} ({k.split("$")[1]})', value=k) for k,v in pb.items() if current.lower() in f'{k.split("$")[0]} {v.lower()} ({k.split("$")[1]})']
@@ -42,10 +44,11 @@ class InfoarenaGroup(app_commands.Group):
   
   @app_commands.command(name='cont', description='Vezi contul de infoarena al unui utilizator')
   @app_commands.describe(nume='Numele utilizatorului')
-  async def cont(self, interaction: discord.Interaction, nume: str):
+  @app_commands.describe(varena='Contul e pe varena?')
+  async def cont(self, interaction: discord.Interaction, nume: str, varena: bool=False):
     await interaction.response.defer()
 
-    data = await infoarena.get_account(nume)
+    data = await infoarena.get_account(nume, varena)
     if data['error']:
       embed = dsutil.create_error_embed('Utilizatorul nu există (sau s-a întâmplat ceva foarte greșit).')
       await interaction.edit_original_response(embed=embed)
@@ -55,27 +58,31 @@ class InfoarenaGroup(app_commands.Group):
       ('Rating', data['rating']),
       ('Statut', data['statut']),
     ], colour=dsutil.LIGHT_BLUE)
-    embed.set_author(name=data['display_name'], url=f'https://www.infoarena.ro/utilizator/{nume}', icon_url=INFOARENA_ICON)
+    embed.set_author(name=data['display_name'], url=f'https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{nume}', icon_url={VARENA_ICON if varena else INFOARENA_ICON})
 
-    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.infoarena.ro/utilizator/{nume}', label='Cont')
+    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{nume}', label='Cont')
     view = discord.ui.View().add_item(btn)
 
     await interaction.edit_original_response(view=view, embed=embed)
   
   @app_commands.command(name='monitor', description='Vizualizează monitorul infoarena')
   @app_commands.describe(nume='Numele utilizatorului', problema='Numele problemei')
+  @app_commands.autocomplete(problema=problema_autocomplete)
   async def monitor(self, interaction: discord.Interaction, nume: str="", problema:str=""):
     await interaction.response.defer()
-  
-    data = await infoarena.get_monitor(nume, problema)
+
+    archive = problema.split('$')[0]
+    varena = (archive=='varena')
+    problema = problema.split('$')[1]
+    data = await infoarena.get_monitor(nume, problema, varena)
     if data['error']:
       embed = dsutil.create_error_embed('Cauza este necunoscută.')
       await interaction.edit_original_response(embed=embed)
       return
 
-    desc = ''
+    desc = util.get_category(archive)+'\n'
     for eval in data['evals']:
-      desc += f'[#{eval["id"]}](https://www.infoarena.ro/job_detail/{eval["id"]}) - [{eval["display_name"]}](https://www.infoarena.ro/utilizator/{eval["username"]}) - [{eval["task"]}](https://www.infoarena.ro/problema/{eval["task_link"]}) - {eval["points"]}p' + '\n'
+      desc += f'[#{eval["id"]}](https://www.{"varena" if varena else "infoarena"}.ro/job_detail/{eval["id"]}) - [{eval["display_name"]}](https://www.{"varena" if varena else "infoarena"}.ro/utilizator/{eval["username"]}) - [{eval["task"]}](https://www.{"varena" if varena else "infoarena"}.ro/problema/{eval["task_link"]}) - {eval["points"]}p' + '\n'
     embed = dsutil.create_embed('Monitor', desc, [], colour=dsutil.LIGHT_BLUE)
 
     footer = None
@@ -88,7 +95,7 @@ class InfoarenaGroup(app_commands.Group):
 
     embed.set_footer(text=footer) 
 
-    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.infoarena.ro/monitor?user={nume}&task={problema}', label='Monitor')
+    btn = discord.ui.Button(style=discord.ButtonStyle.link, url=f'https://www.{"varena" if varena else "infoarena"}.ro/monitor?user={nume}&task={problema}', label='Monitor')
     view = discord.ui.View().add_item(btn)
 
     await interaction.edit_original_response(view=view, embed=embed)

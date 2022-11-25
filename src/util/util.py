@@ -62,3 +62,15 @@ def text_find_next_until(el: bs4.element.PageElement, end_t: str) -> str:
     text += s.get_text()
 
   return text
+
+def get_category(archive: str):
+  if archive == 'pb':
+    return '*Arhiva de probleme*'
+  elif archive == 'edu':
+    return '*Arhiva educațională*'
+  elif archive == 'monthly':
+    return '*Arhiva monthly*'
+  elif archive == 'acm':
+    return '*Arhiva ACM*'
+  elif archive == 'varena':
+    return '*Arhiva de probleme varena*'
