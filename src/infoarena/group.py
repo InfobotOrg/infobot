@@ -71,9 +71,12 @@ class InfoarenaGroup(app_commands.Group):
   async def monitor(self, interaction: discord.Interaction, nume: str="", problema:str=""):
     await interaction.response.defer()
 
-    archive = problema.split('$')[0]
+    if problema:
+      archive = problema.split('$')[0]
+      problema = problema.split('$')[1]
+    else:
+      archive = ''
     varena = (archive=='varena')
-    problema = problema.split('$')[1]
     data = await infoarena.get_monitor(nume, problema, varena)
     if data['error']:
       embed = dsutil.create_error_embed('Cauza este necunoscută.')

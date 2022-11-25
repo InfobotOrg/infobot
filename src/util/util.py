@@ -74,3 +74,4 @@ def get_category(archive: str):
     return '*Arhiva ACM*'
   elif archive == 'varena':
     return '*Arhiva de probleme varena*'
+  return ''
