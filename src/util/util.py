@@ -8,6 +8,8 @@ def prettifySoup(soup: bs4.BeautifulSoup, id: str):
   """
 
   div = soup.find(id=id)
+  if not div:
+    return
 
   # Change format of tags
   for em in div.find_all('em'):
@@ -20,10 +22,19 @@ def prettifySoup(soup: bs4.BeautifulSoup, id: str):
     var.string = f'`{var.get_text()}`'
   for code in div.find_all('code'):
     code.string = f'`{code.get_text()}`'
+  for pre in div.find_all('pre'):
+    pre.string = f'\n```\n{pre.get_text()}\n```'
+  for h3 in div.find_all('h3'):
+    h3.string = f'**{h3.get_text()}**'
+  for script in div.find_all('script'):
+    if script.string and 'ads' in script.get_text():
+      script.string = ''
   #for jax in div.find_all('span', class_='MathJax'): # TODO https://github.com/RolandPetrean/infobot/issues/5
   #  jax.string = f'`{jax.get_text()}`'
   for li in div.find_all('li'):
-    li.string = f'- {li.get_text()}'
+    li.string = f'• {li.get_text()}'
+  for table in div.find_all('table'): # nu pot parsa tabele scuze 
+    table.string = ''
 
 def prettify(text: str, length: int = 350) -> str:
   """Format text.
