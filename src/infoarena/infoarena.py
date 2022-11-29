@@ -22,56 +22,34 @@ async def get_problem(name: str, archive: str):
         return {'error': page.status}
 
       soup = BeautifulSoup(await page.text(), 'lxml')
-      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'statement', 'poster', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'poster'])
       data['categories'] = util.get_category(archive)
-
-      util.prettifySoup(soup, 'main')
-
-      infotable = soup.find('div', id='main').find('table')
+      
+      main = soup.find('div', id='main')
+      infotable = main.find('table')
       if infotable:
-        data['source'] = infotable.find('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
-        data['author'] = infotable.find('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text()
-        data['time'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text().split(' ')[0]
+        data['source'] = util.prettify(infotable.find('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text())
+        data['author'] = util.prettify(infotable.find('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text())
+        data['time'] = util.prettify(infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text().split(' ')[0])
         data['memory'] = str(int(int(infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text().split(' ')[0])/100)/10)
+      
+      util.prettifySoup(soup, 'main')
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:
-        data['name'] = name_header.get_text()
-        data['statement'] = util.text_find_next_until(name_header, ['h2'])
+        data['name'] = util.prettify(name_header.get_text())
       poster = soup.find('span', class_='tiny-user')
       if poster:
         poster_username = soup.find('span', class_='username').get_text()
         data['poster'] = (f'{poster.find("a").get_text()} ({poster_username})', base+poster.find('img')['src'])
 
-      task_header = soup.find('h2', text=re.compile('Cerin.a'))
-      if task_header:
-        data['task'] = util.text_find_next_until(task_header, ['h2'])
-        if data['statement'] == data['task']:
-          data['statement'] = None
+      data['headers'] = [('Enunț', util.prettify(util.text_find_next_until(name_header, 'h2')))]
+      headers = main.find_all('h2')
+      for header in headers:
+        if header.get_text() == 'Exemplu':
+          break
+        data['headers'].append((header.get_text(), util.prettify(util.text_find_next_until(header, 'h2'))))
 
-      input_header = soup.find('h2', text='Date de intrare')
-      output_header = soup.find('h2', text=re.compile('Date de ie.ire'))
-      if input_header and output_header:
-        data['input'] = util.text_find_next_until(input_header, ['h2'])
-        data['output'] = util.text_find_next_until(output_header, ['h2', 'table'])
-      
-      example_header = soup.find('h2', text='Exemplu')
-      example_table = soup.find('table', class_='example')
-      if example_header:
-        example_table = example_header.find_next('table', class_='example')
-      if example_table:
-        file_in = example_table.find('tr').find('th')
-        data['file_in'] = file_in.get_text()
-        data['file_out'] = file_in.find_next_sibling('th').get_text()
-        in_example = example_table.find('tr').find_next_sibling('tr').find('td')
-        data['in_example'] = in_example.get_text()
-        data['out_example'] = in_example.find_next_sibling('td').get_text()
-
-      for k, v in data.items():
-        if type(v) == tuple:
-          data[k] = (util.prettify(v[0]), util.prettify(v[1]))
-        elif v:
-          data[k] = util.prettify(v)
       return data
 
 async def get_account(name: str, varena: bool):

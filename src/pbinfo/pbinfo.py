@@ -18,22 +18,22 @@ async def get_problem(id: int) -> dict:
       if page.status != 200:
         return {'error': page.status}
 
-      soup = BeautifulSoup(await page.text(), 'lxml')
-      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'poster', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      text = await page.text()
+      soup = BeautifulSoup(text, 'lxml')
+      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'poster', 'solutions'])
       data['id'] = id
 
       util.prettifySoup(soup, 'problema-wrapper')
+      article = soup.find('article', id='enunt')
 
       infotable = soup.find('table', class_='table-bordered')
       if infotable:
         time = infotable.find('tr').find_next('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td')
-        data['time'] = time.get_text().split(' ')[0]
-        data['memory'] = time.find_next_sibling('td').get_text().split(' ')[0]
-        data['source'] = time.find_next_sibling('td').find_next_sibling('td').get_text()
-        data['author'] = time.find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
+        data['time'] = util.prettify(time.get_text().split(' ')[0])
+        data['memory'] = util.prettify(time.find_next_sibling('td').get_text().split(' ')[0])+'.0'
+        data['source'] = util.prettify(time.find_next_sibling('td').find_next_sibling('td').get_text())
+        data['author'] = util.prettify(time.find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text())
         
-        data['source'] = util.prettify(data['source'])
-        data['author'] = util.prettify(data['author'])
         if data['source'] == '-':
           data['source'] = None
         if data['author'] == '-':
@@ -50,52 +50,17 @@ async def get_problem(id: int) -> dict:
 
       name_header = soup.find('h1', class_='text-primary')
       if name_header:
-        data['name'] = name_header.find('a').get_text()
+        data['name'] = util.prettify(name_header.find('a').get_text())
       poster = soup.find('span', class_='pbi-widget-user pbi-widget-user-span')
       if poster:
-        data['poster'] = (poster.get_text(), poster.find('img')['src'])
+        data['poster'] = (util.prettify(poster.get_text()), poster.find('img')['src'])
       data['solutions'] = soup.find('span', class_='badge').get_text()
 
-      statement_header = soup.find('h1', text=re.compile('Enun.'))
-      if not statement_header:
-        statement_header = soup.find('article', id='enunt').find('p')
-      if statement_header:
-        data['statement'] = util.text_find_next_until(statement_header, 'h1')
-      task_header = soup.find('h1', text=re.compile('Cerin.a'))
-      if task_header:
-        data['task'] = util.text_find_next_until(task_header, 'h1')
-      if data['task'] == data['statement']:
-        data['statement'] = None
+      data['headers'] = [('Enunț', util.prettify(util.text_find_next_until(article.find(), 'h1')))]
+      headers = article.find_all('h1')
+      for header in headers:
+        data['headers'].append((header.get_text(), util.prettify(util.text_find_next_until(header, 'h1'))))
 
-      input_header = soup.find('h1', text='Date de intrare')
-      output_header = soup.find('h1', text=re.compile('Date de ie.ire'))
-      if input_header:
-        if not output_header: # some problems have typos (ex. https://www.pbinfo.ro/probleme/1436)
-          output_header = input_header.find_next_sibling('h1')
-        if output_header:
-          data['input'] = util.text_find_next_until(input_header, ['h1'])
-          data['output'] = util.text_find_next_until(output_header, ['h1'])
-
-      example_header = soup.find('h1', text=re.compile('Exemplu+'))
-      if example_header:
-        editableIn = example_header.find_next_sibling('pre')
-        if editableIn:
-          editableOut = editableIn.find_next_sibling('pre')
-          if editableOut:
-            data['file_in'] = editableIn.find_previous('p').get_text()
-            data['in_example'] = editableIn.get_text()
-            data['file_out'] = editableOut.find_previous('p').get_text()
-            data['out_example'] = editableOut.get_text()
-        if not data['file_in']:
-          example = example_header.find_next_sibling('p')
-          if example:
-            data['example'] = example.get_text()
-
-      for k, v in data.items():
-        if type(v) == tuple:
-          data[k] = (util.prettify(v[0]), util.prettify(v[1]))
-        elif isinstance(v, str):
-          data[k] = util.prettify(v)
       return data
 
 async def get_account(name: str):
