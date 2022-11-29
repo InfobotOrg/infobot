@@ -19,10 +19,25 @@ async def get_problem(id: int) -> dict:
         return {'error': page.status}
 
       soup = BeautifulSoup(await page.text(), 'lxml')
-      data = dict.fromkeys(['error', 'categories', 'name', 'author', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'poster', 'solutions', 'statement', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
       data['id'] = id
 
       util.prettifySoup(soup, 'problema-wrapper')
+
+      infotable = soup.find('table', class_='table-bordered')
+      if infotable:
+        time = infotable.find('tr').find_next('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td')
+        data['time'] = time.get_text().split(' ')[0]
+        data['memory'] = time.find_next_sibling('td').get_text().split(' ')[0]
+        data['source'] = time.find_next_sibling('td').find_next_sibling('td').get_text()
+        data['author'] = time.find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
+        
+        data['source'] = util.prettify(data['source'])
+        data['author'] = util.prettify(data['author'])
+        if data['source'] == '-':
+          data['source'] = None
+        if data['author'] == '-':
+          data['author'] = None
 
       categories = soup.find('ol', class_='breadcrumb')
       if categories:
@@ -36,9 +51,9 @@ async def get_problem(id: int) -> dict:
       name_header = soup.find('h1', class_='text-primary')
       if name_header:
         data['name'] = name_header.find('a').get_text()
-      author = soup.find('span', class_='pbi-widget-user pbi-widget-user-span')
-      if author:
-        data['author'] = (author.get_text(), author.find('img')['src'])
+      poster = soup.find('span', class_='pbi-widget-user pbi-widget-user-span')
+      if poster:
+        data['poster'] = (poster.get_text(), poster.find('img')['src'])
       data['solutions'] = soup.find('span', class_='badge').get_text()
 
       statement_header = soup.find('h1', text=re.compile('Enun.'))
@@ -49,6 +64,8 @@ async def get_problem(id: int) -> dict:
       task_header = soup.find('h1', text=re.compile('Cerin.a'))
       if task_header:
         data['task'] = util.text_find_next_until(task_header, 'h1')
+      if data['task'] == data['statement']:
+        data['statement'] = None
 
       input_header = soup.find('h1', text='Date de intrare')
       output_header = soup.find('h1', text=re.compile('Date de ie.ire'))

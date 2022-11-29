@@ -66,9 +66,9 @@ class InfoarenaGroup(app_commands.Group):
     await interaction.edit_original_response(view=view, embed=embed)
   
   @app_commands.command(name='monitor', description='Vizualizează monitorul infoarena')
-  @app_commands.describe(nume='Numele utilizatorului', problema='Numele problemei')
+  @app_commands.describe(nume='Numele utilizatorului', problema='Numele problemei', varena='Forțează folosirea monitorului varena')
   @app_commands.autocomplete(problema=problema_autocomplete)
-  async def monitor(self, interaction: discord.Interaction, nume: str="", problema:str=""):
+  async def monitor(self, interaction: discord.Interaction, nume: str="", problema: str="", varena: bool=False):
     await interaction.response.defer()
 
     if problema:
@@ -76,7 +76,7 @@ class InfoarenaGroup(app_commands.Group):
       problema = problema.split('$')[1]
     else:
       archive = ''
-    varena = (archive=='varena')
+    varena = varena or (archive=='varena')
     data = await infoarena.get_monitor(nume, problema, varena)
     if data['error']:
       embed = dsutil.create_error_embed('Nu există acest utilizator/problemă' if data['error']==404 else 'Cauza este necunoscută.')

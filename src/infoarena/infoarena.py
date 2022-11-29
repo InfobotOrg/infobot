@@ -22,20 +22,26 @@ async def get_problem(name: str, archive: str):
         return {'error': page.status}
 
       soup = BeautifulSoup(await page.text(), 'lxml')
-      data = dict.fromkeys(['error', 'categories', 'name', 'statement', 'author', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      data = dict.fromkeys(['error', 'time', 'memory', 'source', 'author', 'categories', 'name', 'statement', 'poster', 'task', 'input', 'output', 'file_in', 'in_example', 'file_out', 'out_example', 'example'])
+      data['categories'] = util.get_category(archive)
 
       util.prettifySoup(soup, 'main')
 
-      data['categories'] = util.get_category(archive)
+      infotable = soup.find('div', id='main').find('table')
+      if infotable:
+        data['source'] = infotable.find('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text()
+        data['author'] = infotable.find('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text()
+        data['time'] = infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').find_next_sibling('td').get_text().split(' ')[0]
+        data['memory'] = str(int(int(infotable.find('tr').find_next_sibling('tr').find_next_sibling('tr').find('td').find_next_sibling('td').find_next_sibling('td').find_next_sibling('td').get_text().split(' ')[0])/100)/10)
 
       name_header = soup.find('h1').find_next('h1')
       if name_header:
         data['name'] = name_header.get_text()
         data['statement'] = util.text_find_next_until(name_header, ['h2'])
-      author = soup.find('span', class_='tiny-user')
-      if author:
-        author_username = soup.find('span', class_='username').get_text()
-        data['author'] = (f'{author.find("a").get_text()} ({author_username})', base+author.find('img')['src'])
+      poster = soup.find('span', class_='tiny-user')
+      if poster:
+        poster_username = soup.find('span', class_='username').get_text()
+        data['poster'] = (f'{poster.find("a").get_text()} ({poster_username})', base+poster.find('img')['src'])
 
       task_header = soup.find('h2', text=re.compile('Cerin.a'))
       if task_header:
@@ -48,8 +54,11 @@ async def get_problem(name: str, archive: str):
       if input_header and output_header:
         data['input'] = util.text_find_next_until(input_header, ['h2'])
         data['output'] = util.text_find_next_until(output_header, ['h2', 'table'])
-
+      
+      example_header = soup.find('h2', text='Exemplu')
       example_table = soup.find('table', class_='example')
+      if example_header:
+        example_table = example_header.find_next('table', class_='example')
       if example_table:
         file_in = example_table.find('tr').find('th')
         data['file_in'] = file_in.get_text()

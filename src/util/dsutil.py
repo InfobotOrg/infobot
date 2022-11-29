@@ -51,7 +51,15 @@ def create_problem_embed(title: str, data: dict) -> discord.Embed:
   title -- the title of the embed
   data -- the problem data
   """
-  embed = create_embed(title, data['categories'], [
+
+  desc = data['categories']+'\n\n'
+  if data['source']:
+    desc += data['source']+'\n'
+  if data['author']:
+    desc += f'Autor: {data["author"]}\n'
+  desc += f'Limită timp: `{data["time"]}s`\nLimită memorie: `{data["memory"]}MB`'
+
+  embed = create_embed(title, desc, [
     ('Enunț', data['statement']),
     ('Cerința', data['task']),
     ('Date de intrare', data['input']),
@@ -60,6 +68,6 @@ def create_problem_embed(title: str, data: dict) -> discord.Embed:
   ], colour=LIGHT_BLUE)
   if data['file_in']:
     add_data(embed, name='Exemplu', value=f'**{data["file_in"].replace("`", "")}**\n```\n{data["in_example"]}```\n**{data["file_out"].replace("`", "")}**\n```\n{data["out_example"]}```')
-  if data['author']:
-    embed.set_footer(text=f'Postată de {data["author"][0]}', icon_url=data['author'][1])
+  if data['poster']:
+    embed.set_footer(text=f'Postată de {data["poster"][0]}', icon_url=data['poster'][1])
   return embed
