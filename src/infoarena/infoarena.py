@@ -68,7 +68,6 @@ async def get_account(name: str, varena: bool):
 
       data = {'error': None}
       soup = BeautifulSoup(await page.text(), 'lxml')
-      util.prettifySoup(soup, 'main')
 
       mainblock = soup.find('div', id='main')
       infotable = mainblock.find('div', class_='wiki_text_block').find('table')
